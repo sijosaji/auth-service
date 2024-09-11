@@ -52,7 +52,7 @@ You can start the application using one of the following methods:
     java -jar target/auth-service-0.0.1-SNAPSHOT.jar
     ```
 
-The application will start and be accessible at `http://localhost:8080`.
+The application will start and be accessible at `http://localhost:9000`.
 
 ## API Endpoints
 
@@ -72,7 +72,7 @@ Registers a new user.
 
 - **Example Request**:
     ```bash
-    curl -X POST http://localhost:8080/auth/register \
+    curl -X POST http://localhost:9000/auth/register \
     -H "Content-Type: application/json" \
     -d '{
           "username": "user@example.com",
@@ -99,7 +99,7 @@ Generates an authentication token for the user.
 
 - **Example Request**:
     ```bash
-    curl -X POST http://localhost:8080/auth/token \
+    curl -X POST http://localhost:9000/auth/token \
     -H "Content-Type: application/json" \
     -d '{
           "username": "user@example.com",
@@ -134,7 +134,7 @@ Validates the provided authentication token.
 
 - **Example Request**:
     ```bash
-    curl -X POST http://localhost:8080/auth/validate \
+    curl -X POST http://localhost:9000/auth/validate \
     -H "Content-Type: application/json" \
     -d '{
           "token": "access-token-value",
@@ -159,7 +159,7 @@ Refreshes the access token using the provided refresh token.
 
 - **Example Request**:
     ```bash
-    curl -X PUT http://localhost:8080/auth/{refreshToken}/refresh \
+    curl -X PUT http://localhost:9000/auth/{refreshToken}/refresh \
     -H "Content-Type: application/json"
     ```
 
