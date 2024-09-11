@@ -20,7 +20,7 @@ This Spring Boot application provides an authentication service that supports us
 
 1. **Clone the Repository**:
     ```bash
-    git clone https://github.com/yourusername/auth-service.git
+    git clone https://github.com/sijosaji/auth-service.git
     cd auth-service
     ```
 
@@ -35,7 +35,7 @@ This Spring Boot application provides an authentication service that supports us
    - Ensure MongoDB is running.
    - Update the `application.properties` file located in the `src/main/resources` directory with your MongoDB connection details:
      ```properties
-     spring.data.mongodb.uri=mongodb://localhost:27017/auth_service
+     spring.data.mongodb.uri=mongodb://localhost:27017/mongo_migration
      ```
 
 ## Running the Application
@@ -70,7 +70,7 @@ Registers a new user.
     }
     ```
 
-- **cURL Example**:
+- **Example Request**:
     ```bash
     curl -X POST http://localhost:8080/auth/register \
     -H "Content-Type: application/json" \
@@ -97,7 +97,7 @@ Generates an authentication token for the user.
     }
     ```
 
-- **cURL Example**:
+- **Example Request**:
     ```bash
     curl -X POST http://localhost:8080/auth/token \
     -H "Content-Type: application/json" \
@@ -127,7 +127,8 @@ Validates the provided authentication token.
   - **Body**: `AuthValidationRequest` - JSON object containing the token to validate:
     ```json
     {
-      "token": "access-token-value"
+      "token": "access-token-value",
+      "roles": ["ROLE_USER"]
     }
     ```
 
@@ -136,12 +137,18 @@ Validates the provided authentication token.
     curl -X POST http://localhost:8080/auth/validate \
     -H "Content-Type: application/json" \
     -d '{
-          "token": "access-token-value"
+          "token": "access-token-value",
+          "roles": ["ROLE_USER"]
         }'
     ```
 
 - **Response**:
-  - **200 OK**: If the token is valid.
+  - **200 OK**: Returns userId if the token is valid.
+  ```json
+    {
+      "userId": "user-id"
+    }
+    ```
 
 ### `PUT /auth/{refreshToken}/refresh`
 
@@ -150,7 +157,7 @@ Refreshes the access token using the provided refresh token.
 - **Request**:
   - **Path Parameter**: `refreshToken` - The refresh token used to generate a new access token.
 
-- **cURL Example**:
+- **Example Request**:
     ```bash
     curl -X PUT http://localhost:8080/auth/{refreshToken}/refresh \
     -H "Content-Type: application/json"
@@ -166,12 +173,3 @@ Refreshes the access token using the provided refresh token.
       "roles": ["ROLE_USER"]
     }
     ```
-
-## Exception Handling
-
-- **DuplicateUserException**: Thrown when attempting to register a user that already exists.
-- **ResponseStatusException**: Thrown when authentication fails due to invalid credentials.
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
