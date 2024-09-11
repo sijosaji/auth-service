@@ -132,7 +132,7 @@ Validates the provided authentication token.
     }
     ```
 
-- **cURL Example**:
+- **Example Request**:
     ```bash
     curl -X POST http://localhost:8080/auth/validate \
     -H "Content-Type: application/json" \
