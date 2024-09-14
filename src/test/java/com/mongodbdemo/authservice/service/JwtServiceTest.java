@@ -2,12 +2,10 @@ package com.mongodbdemo.authservice.service;
 
 import com.mongodbdemo.authservice.dto.AuthValidationRequest;
 import com.mongodbdemo.authservice.entity.UserCredential;
-import com.mongodbdemo.authservice.repository.UserCredentialRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -19,9 +17,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 @SpringBootTest
 class JwtServiceTest {
-
-    @Mock
-    private UserCredentialRepository userCredentialRepository;
 
     private JwtService jwtService;
 

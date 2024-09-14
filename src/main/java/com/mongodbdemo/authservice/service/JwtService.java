@@ -105,7 +105,7 @@ public class JwtService {
     void validateRoles(Claims claims, List<String> requiredRoles) {
         List<String> roles = claims.get("roles", List.class);
 
-        if (roles == null || (!requiredRoles.isEmpty() &&
+        if (!requiredRoles.isEmpty() && ((roles == null) ||
                 roles.stream().noneMatch(requiredRoles::contains))) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Insufficient roles");
         }
