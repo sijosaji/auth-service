@@ -2,13 +2,17 @@ package com.mongodbdemo.authservice.service;
 
 import com.mongodbdemo.authservice.dto.AuthValidationRequest;
 import com.mongodbdemo.authservice.entity.UserCredential;
+import com.mongodbdemo.authservice.repository.UserCredentialRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.*;
@@ -18,12 +22,16 @@ import static org.mockito.Mockito.*;
 @SpringBootTest
 class JwtServiceTest {
 
-    private JwtService jwtService;
+    @InjectMocks
+    private JwtService jwtService;  // This will inject mocks into the service
+
+    @Mock
+    private UserCredentialRepository userCredentialRepository;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        jwtService = Mockito.spy(new JwtService());
+        jwtService = Mockito.spy(jwtService);
         jwtService.secret = "5367566B59703373367639792F423F4528482B4D6251655468576D5A71347437";
     }
 
@@ -32,7 +40,7 @@ class JwtServiceTest {
         UserCredential userCredential = new UserCredential();
         userCredential.setId("userId");
         userCredential.setRoles(Set.of("ROLE_USER"));
-
+        userCredential.setUsername("test");
         String token = jwtService.generateAccessToken(userCredential);
 
         assertNotNull(token);
@@ -43,6 +51,7 @@ class JwtServiceTest {
         UserCredential userCredential = new UserCredential();
         userCredential.setId("userId");
         userCredential.setRoles(Collections.emptySet());
+        userCredential.setUsername("test");
 
         String token = jwtService.generateAccessToken(userCredential);
 
@@ -54,6 +63,7 @@ class JwtServiceTest {
         UserCredential userCredential = new UserCredential();
         userCredential.setId("userId");
         userCredential.setRoles(Set.of("ROLE_USER"));
+        userCredential.setUsername("test");
         String token = jwtService.generateAccessToken(userCredential);
 
         List<String> requiredRoles = List.of("ROLE_USER");
@@ -62,7 +72,8 @@ class JwtServiceTest {
         request.setAccessToken(token);
         request.setRoles(requiredRoles);
 
-
+        when(userCredentialRepository.findById(anyString()))
+                .thenReturn(Optional.of(userCredential));
         assertDoesNotThrow(() -> jwtService.validateToken(request));
     }
 
@@ -131,6 +142,7 @@ class JwtServiceTest {
     void parseClaimsShouldReturnClaimsWhenTokenIsValid() {
         UserCredential userCredential = new UserCredential();
         userCredential.setId("userId");
+        userCredential.setUsername("test");
         String token = jwtService.generateAccessToken(userCredential);
 
         Claims claims = jwtService.parseClaims(token);
@@ -139,6 +151,46 @@ class JwtServiceTest {
         assertEquals("userId", claims.getSubject());
     }
 
+    @Test
+    void validateUserDetailsShouldThrowUnauthorizedWhenUserIsNotPresent() {
+        // Arrange
+        Claims claims = mock(Claims.class);
+        when(claims.getSubject()).thenReturn("userId");
+
+        // Mock repository to return empty Optional
+        when(userCredentialRepository.findById("userId")).thenReturn(Optional.empty());
+
+        // Act & Assert
+        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> {
+            jwtService.validateUserDetails(claims);
+        });
+
+        assertEquals(HttpStatus.UNAUTHORIZED, exception.getStatusCode());
+        assertEquals("Provided User is not present", exception.getReason());
+    }
+
+    @Test
+    void validateUserDetailsShouldThrowUnauthorizedWhenUsernameMismatch() {
+        // Arrange
+        Claims claims = mock(Claims.class);
+        when(claims.getSubject()).thenReturn("userId");
+        when(claims.get("username")).thenReturn("wrongUsername");
+
+        UserCredential userCredential = new UserCredential();
+        userCredential.setId("userId");
+        userCredential.setUsername("correctUsername");
+
+        // Mock repository to return the user with the correct username
+        when(userCredentialRepository.findById("userId")).thenReturn(Optional.of(userCredential));
+
+        // Act & Assert
+        ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> {
+            jwtService.validateUserDetails(claims);
+        });
+
+        assertEquals(HttpStatus.UNAUTHORIZED, exception.getStatusCode());
+        assertEquals("Invalid User details provided", exception.getReason());
+    }
+
 
 }
-

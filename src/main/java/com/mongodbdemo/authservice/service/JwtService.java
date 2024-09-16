@@ -43,8 +43,8 @@ public class JwtService {
      */
     public String generateAccessToken(UserCredential userCredential) {
         Map<String, Object> claims = Map.of(
-                "roles", CollectionUtils.isEmpty(userCredential.getRoles()) ? List.of() : userCredential.getRoles()
-        );
+                "roles", CollectionUtils.isEmpty(userCredential.getRoles()) ? List.of() : userCredential.getRoles(),
+                "username", userCredential.getUsername());
         return createToken(claims, userCredential.getId());
     }
 
@@ -88,14 +88,30 @@ public class JwtService {
         } catch (ExpiredJwtException | SignatureException ex) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid or expired token");
         }
-
+        validateUserDetails(claims);
         validateRoles(claims, validationRequest.getRoles());
         AuthResponse authResponse = new AuthResponse();
         authResponse.setUserId(claims.getSubject());
         return authResponse;
     }
 
-    /**
+    void validateUserDetails(Claims claims) {
+        // Extract user ID and username from the claims
+        String userId = String.valueOf(claims.getSubject());
+        String username = String.valueOf(claims.get("username"));
+
+        // Retrieve the user credential from the repository
+        UserCredential userCredential = userCredentialRepository.findById(userId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Provided User is not present"));
+
+        // Validate the username
+        if (!username.equals(userCredential.getUsername())) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid User details provided");
+        }
+    }
+
+
+    /*
      * Validates if the roles present in the token match the required roles.
      *
      * @param claims the claims extracted from the JWT.
