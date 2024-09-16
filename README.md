@@ -149,7 +149,8 @@ Validates the provided authentication token.
       "userId": "user-id"
     }
     ```
-
+- **401 UNAUTHORIZED**: If token validation fails.
+- **403 FORBIDDEN**: If a user has insufficient roles.
 ### `PUT /auth/{refreshToken}/refresh`
 
 Refreshes the access token using the provided refresh token.
@@ -173,3 +174,4 @@ Refreshes the access token using the provided refresh token.
       "roles": ["ROLE_USER"]
     }
     ```
+  - **401 UNAUTHORIZED**: If refresh token expires or not present.
