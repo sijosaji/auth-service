@@ -18,13 +18,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class AuthControllerExceptionHandlerTest {
+public class GlobalExceptionHandlerTest {
 
-    private AuthControllerExceptionHandler exceptionHandler;
+    private GlobalExceptionHandler exceptionHandler;
 
     @BeforeEach
     void setUp() {
-        exceptionHandler = new AuthControllerExceptionHandler();
+        exceptionHandler = new GlobalExceptionHandler();
     }
 
     @Test

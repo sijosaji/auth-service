@@ -17,7 +17,7 @@ import java.util.Map;
  * Provides methods to handle specific exceptions and return appropriate HTTP responses.
  */
 @ControllerAdvice
-public class AuthControllerExceptionHandler {
+public class GlobalExceptionHandler {
 
     /**
      * Handles {@link DuplicateUserException} thrown by the AuthController.
