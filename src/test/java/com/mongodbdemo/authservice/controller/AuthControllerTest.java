@@ -131,8 +131,10 @@ class AuthControllerTest {
         AuthResponse authResponse = new AuthResponse("new_access_token", "new_refresh_token", UUID.randomUUID().toString(), List.of());
 
         when(authService.getNewAccessToken(refreshToken)).thenReturn(authResponse);
+        RefreshRequest refreshRequest = new RefreshRequest();
+        refreshRequest.setRefreshToken(refreshToken);
 
-        ResponseEntity<AuthResponse> response = authController.getNewAccessToken(refreshToken);
+        ResponseEntity<AuthResponse> response = authController.getNewAccessToken(refreshRequest);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals("new_access_token", response.getBody().getAccessToken());
@@ -142,11 +144,13 @@ class AuthControllerTest {
     @Test
     void getNewAccessTokenShouldThrowResponseStatusExceptionWhenRefreshTokenIsInvalid() {
         String refreshToken = "invalid_refresh_token";
+        RefreshRequest refreshRequest = new RefreshRequest();
+        refreshRequest.setRefreshToken(refreshToken);
 
         when(authService.getNewAccessToken(refreshToken)).thenThrow(new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid Refresh Token"));
 
         ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> {
-            authController.getNewAccessToken(refreshToken);
+            authController.getNewAccessToken(refreshRequest);
         });
 
         assertEquals(HttpStatus.UNAUTHORIZED, exception.getStatusCode());

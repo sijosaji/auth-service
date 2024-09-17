@@ -76,11 +76,10 @@ public class AuthController {
     /**
      * Refreshes the access token using the provided refresh token.
      *
-     * @param refreshToken the refresh token used to generate a new access token.
      * @return a response entity containing the new access token.
      */
-    @PutMapping(path = "{refreshToken}/refresh", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<AuthResponse> getNewAccessToken(@PathVariable("refreshToken") String refreshToken) {
-        return ResponseEntity.ok(service.getNewAccessToken(refreshToken));
+    @PutMapping(path = "/refresh", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<AuthResponse> getNewAccessToken(@RequestBody @Valid RefreshRequest refreshRequest) {
+        return ResponseEntity.ok(service.getNewAccessToken(refreshRequest.getRefreshToken()));
     }
 }

@@ -41,7 +41,7 @@ public class AuthConfig implements WebMvcConfigurer {
         http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/auth/register", "/auth/token",
-                                "/auth/validate", "/auth/{refreshToken}/refresh").permitAll());
+                                "/auth/validate", "/auth/refresh").permitAll());
 
         return http.build();
     }
