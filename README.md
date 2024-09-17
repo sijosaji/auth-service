@@ -151,17 +151,25 @@ Validates the provided authentication token.
     ```
 - **401 UNAUTHORIZED**: If token validation fails.
 - **403 FORBIDDEN**: If a user has insufficient roles.
-### `PUT /auth/{refreshToken}/refresh`
+### `PUT /auth/refresh`
 
 Refreshes the access token using the provided refresh token.
 
 - **Request**:
-  - **Path Parameter**: `refreshToken` - The refresh token used to generate a new access token.
+  - **Body**: `RefreshRequest` - JSON object containing refresh token to generate new access token:
+    ```json
+    {
+      "refreshToken": "refresh-token-value"
+    }
+    ```
 
 - **Example Request**:
     ```bash
-    curl -X PUT http://localhost:9000/auth/{refreshToken}/refresh \
+    curl -X PUT http://localhost:9000/auth/refresh \
     -H "Content-Type: application/json"
+    -d '{
+          "refreshToken": "refresh-token-value"
+        }'
     ```
 
 - **Response**:
